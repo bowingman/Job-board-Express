@@ -1,20 +1,32 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
+import authMiddleware from "src/middleware/auth.middleware";
 
-import { findAll, createOne, User } from "src/services/user-service";
+import { findAllUser } from "src/services/dupuser-service";
 
 const router = Router();
 
-router
-  .route("/")
-  .get((_: Request, response: Response) => {
-    response.json(findAll());
-  })
-  .post(bodyParser.json(), (request: Request, response: Response) => {
-    response.json(
-      createOne({ username: (request.body as Omit<User, "id">).username })
-    );
-  });
+router.get(
+  "/",
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  authMiddleware,
+  async (_: Request, response: Response, next: NextFunction) => {
+    try {
+      const findAllUsersData = await findAllUser();
+
+      response
+        .status(200)
+        .json({ data: findAllUsersData, message: "findAllUser" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+// .post(bodyParser.json(), (request: Request, response: Response) => {
+//   response.json(
+//     createOne({ username: (request.body as Omit<User, "id">).username })
+//   );
+// });
 
 // router.get('/:id', (request: Request, response: Response) => {
 //   response.json(findOne(request.params.id));

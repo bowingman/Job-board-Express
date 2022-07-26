@@ -9,3 +9,7 @@ export interface TokenData {
 export interface DataStoredInToken {
   id: number;
 }
+
+export interface RequestWithUser extends Request {
+  user?: User;
+}
