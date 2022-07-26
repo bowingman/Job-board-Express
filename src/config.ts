@@ -1,7 +1,15 @@
 import { ValidationResult } from "@hapi/joi";
 import { configSchema } from "src/validation-schemas/config-schema";
 
-const { CORS_ORIGIN, LOG_LEVEL, PORT, LOG_TRANSPORTS, NODE_ENV } = process.env;
+export const {
+  CORS_ORIGIN,
+  LOG_LEVEL,
+  PORT,
+  LOG_TRANSPORTS,
+  LOG_DIR,
+  NODE_ENV,
+  SECRET_KEY,
+} = process.env;
 
 const { value, error } = configSchema.validate({
   rootDir: process.cwd(),
