@@ -20,6 +20,7 @@ model User {
   rate        Int
   approved    Boolean
   request     ApplyRequest?
+  job         Job?
 }
 
 model Job {
@@ -30,6 +31,8 @@ model Job {
   approved    Boolean
   status      String
   request     ApplyRequest?
+  user        User          @relation(fields: [userId], references: [id])
+  userId      Int           @unique
 }
 
 model Application {

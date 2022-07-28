@@ -13,3 +13,8 @@ export interface DataStoredInToken {
 export interface RequestWithUser extends Request {
   user?: User;
 }
+
+export interface RequestWithUserGeneric<P, ResBody, ReqBody>
+  extends Request<P, ResBody, ReqBody> {
+  user?: User;
+}

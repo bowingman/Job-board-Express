@@ -1,4 +1,4 @@
-import { NextFunction, RequestHandler, Response } from "express";
+import { NextFunction, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { SECRET_KEY } from "src/config";
@@ -23,8 +23,6 @@ const authMiddleware = async (
       (req.header("Authorization")
         ? req.header("Authorization")?.split("Bearer ")[1]
         : null);
-
-    console.log(Authorization);
 
     if (Authorization) {
       const secretKey = SECRET_KEY || "";
