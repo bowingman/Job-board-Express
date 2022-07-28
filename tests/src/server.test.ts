@@ -1,10 +1,10 @@
-import sinon from 'sinon';
-import { expect } from 'chai';
+import sinon from "sinon";
+import { expect } from "chai";
 
-import * as app from 'src/app';
-import { config } from 'src/config';
+import * as app from "src/app";
+import { config } from "src/config";
 
-describe('Server', () => {
+describe("Server", () => {
   const sandbox = sinon.createSandbox();
 
   const listenStub = sandbox.stub().callsFake((_, callback: () => void) => {
@@ -14,8 +14,8 @@ describe('Server', () => {
   before(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    sandbox.stub(app, 'app').returns({
-      listen: listenStub
+    sandbox.stub(app, "app").returns({
+      listen: listenStub,
     });
   });
 
@@ -25,7 +25,7 @@ describe('Server', () => {
 
   context(`when server starts`, () => {
     before(async () => {
-      await import('src/server');
+      await import("src/server");
     });
 
     it(`should listen on port ${config.port}`, () => {
