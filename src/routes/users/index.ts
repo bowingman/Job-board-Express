@@ -1,22 +1,152 @@
 import { Router, Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
+import * as core from "express-serve-static-core";
 import authMiddleware from "src/middleware/auth.middleware";
+import {
+  findUserByRole,
+  createUser,
+  findUser,
+  updateUser,
+  deleteUser,
+} from "src/services/dupuser-service";
+import {
+  RequestWithUser,
+  RequestWithUserGeneric,
+} from "src/interfaces/auth.interface";
 
-import { findAllUser } from "src/services/dupuser-service";
+import { HttpException } from "src/exceptions/HttpException";
 
 const router = Router();
 
 router.get(
   "/",
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  bodyParser.json(),
   authMiddleware,
-  async (_: Request, response: Response, next: NextFunction) => {
+  async (_: RequestWithUser, response: Response, next: NextFunction) => {
     try {
-      const findAllUsersData = await findAllUser();
+      const findAllUsersData = await findUserByRole(_.user?.role);
 
       response
         .status(200)
-        .json({ data: findAllUsersData, message: "findAllUser" });
+        .json({ data: findAllUsersData, message: "findUser" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/",
+  bodyParser.json(),
+  authMiddleware,
+  async (
+    request: RequestWithUserGeneric<
+      core.ParamsDictionary,
+      any,
+      {
+        name: string;
+        password: string;
+        role: string;
+        title: string;
+        description: string;
+      }
+    >,
+    response: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const createUserData = await createUser({
+        name: request.body.name,
+        password: request.body.password,
+        role: request.body.role,
+        title: request.body.title,
+        description: request.body.description,
+        rate: 0,
+        approved: false,
+      });
+
+      if (!createUserData) throw new HttpException(409, createUserData);
+
+      response
+        .status(200)
+        .json({ data: createUserData, message: "createuser" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/:id",
+  bodyParser.json(),
+  authMiddleware,
+  async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const findUserData = await findUser(Number(request.params.id));
+
+      if (!findUserData) throw new HttpException(409, "You're not user");
+
+      response.status(200).json({ data: findUserData, message: "finduser" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/:id",
+  bodyParser.json(),
+  authMiddleware,
+  async (
+    request: RequestWithUserGeneric<
+      core.ParamsDictionary,
+      any,
+      {
+        name: string;
+        title: string;
+        description: string;
+        role: string;
+        approved: boolean;
+        password: string;
+      }
+    >,
+    response: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const updateUserData = await updateUser(Number(request.params.id), {
+        name: request.body.name,
+        title: request.body.title,
+        description: request.body.description,
+        role: request.body.role,
+        approved: request.body.approved,
+        password: request.body.password,
+      });
+
+      if (!updateUserData) throw new HttpException(409, "You're note user");
+
+      response
+        .status(200)
+        .json({ data: updateUserData, message: "updateuser" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  "/:id",
+  bodyParser.json(),
+  authMiddleware,
+  (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const deleteUserData = deleteUser(Number(request.params.id));
+
+      if (!deleteUser) throw new HttpException(409, "You are not user");
+
+      response
+        .status(200)
+        .json({ data: deleteUserData, message: "deleteuser" });
     } catch (error) {
       next(error);
     }

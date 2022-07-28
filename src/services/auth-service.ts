@@ -1,7 +1,8 @@
 import { compare, hash } from "bcrypt";
+import { verify } from "jsonwebtoken";
 import { HttpException } from "src/exceptions/HttpException";
 import { PrismaClient, User } from "@prisma/client";
-import { TokenData } from "src/interfaces/auth.interface";
+import { DataStoredInToken, TokenData } from "src/interfaces/auth.interface";
 import { sign } from "jsonwebtoken";
 import { SECRET_KEY } from "src/config";
 import { isEmpty } from "src/utils/util";
@@ -42,7 +43,7 @@ export const signup = async (userData: UserDto): Promise<User> => {
 
 export const signin = async (
   userCreden: UserCredential
-): Promise<{ cookie: string; findUser: User }> => {
+): Promise<{ cookie: string; findUser: User; token: string }> => {
   const findUser = await users.findUnique({
     where: { name: userCreden.name },
   });
@@ -61,7 +62,30 @@ export const signin = async (
   const tokenData = createToken(findUser);
   const cookie = createCookie(tokenData);
 
-  return { cookie, findUser };
+  return { cookie, findUser, token: tokenData.token };
+};
+
+export const signinByToken = async (
+  token: string
+): Promise<{ cookie: string; findUser: User; token: string }> => {
+  const secretKey = SECRET_KEY || "";
+  const verificationResponse = verify(token, secretKey) as DataStoredInToken;
+  const userId = verificationResponse.id;
+  const findUser = await users.findUnique({ where: { id: Number(userId) } });
+
+  if (!findUser) throw new HttpException(400, "Failed to signin by token.");
+
+  const tokenData = createToken(findUser);
+  const cookie = createCookie(tokenData);
+
+  return { cookie, findUser, token: tokenData.token };
+};
+
+export const logout = async (name: string): Promise<User> => {
+  const findUser = await users.findFirst({ where: { name } });
+  if (!findUser) throw new HttpException(409, "You're not user");
+
+  return findUser;
 };
 
 const createToken = (user: User): TokenData => {
