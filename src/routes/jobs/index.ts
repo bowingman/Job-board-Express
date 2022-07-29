@@ -13,6 +13,7 @@ import {
   findJob,
   findJobByRole,
   updateJob,
+  approveJob,
 } from "src/services/job-service";
 
 const router = Router();
@@ -43,8 +44,9 @@ router.post(
       {
         title: string;
         description: string;
-        rate: number;
-        userId: number;
+        company_scale: string;
+        company_tips: string;
+        job_info: string;
       }
     >,
     response: Response,
@@ -54,13 +56,17 @@ router.post(
       const createJobData = await createJob({
         title: request.body.title,
         description: request.body.description,
-        rate: request.body.rate,
+        rate: 0,
         approved: false,
         status: "ready",
-        userId: request.body.userId,
+        userId: Number(request.user?.id),
+        company_scale: request.body.company_scale,
+        company_tips: request.body.company_tips,
+        job_info: request.body.job_info,
+        created_at: new Date(),
       });
 
-      response.status(200).json({ data: createJobData, message: "createjob" });
+      response.status(200).json({ data: createJobData, message: "createJob" });
     } catch (error) {
       next(error);
     }
@@ -74,7 +80,7 @@ router.get(
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const findJobData = await findJob(Number(request.params.id));
-      response.status(200).json({ data: findJobData, message: "findjob" });
+      response.status(200).json({ data: findJobData, message: "findJob" });
     } catch (error) {
       next(error);
     }
@@ -88,7 +94,7 @@ router.delete(
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const deleteJobData = await deleteJob(Number(request.params.id));
-      response.status(200).json({ data: deleteJobData, message: "deletejob" });
+      response.status(200).json({ data: deleteJobData, message: "deleteJob" });
     } catch (error) {
       next(error);
     }
@@ -114,9 +120,27 @@ router.put(
         description: request.body.description,
       });
 
-      response.status(200).json({ data: updateJobData, message: "updatejob" });
+      response.status(200).json({ data: updateJobData, message: "updateJob" });
     } catch (error) {
       next(error);
     }
   }
 );
+
+router.put(
+  "/:id/approve",
+  bodyParser.json(),
+  authMiddleware,
+  async (request: RequestWithUser, response: Response, next: NextFunction) => {
+    try {
+      const approvedJobData = await approveJob(Number(request.params.id));
+      response
+        .status(200)
+        .json({ data: approvedJobData, message: "approveJob" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+export default router;

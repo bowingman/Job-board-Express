@@ -88,7 +88,7 @@ export const logout = async (name: string): Promise<User> => {
   return findUser;
 };
 
-const createToken = (user: User): TokenData => {
+export const createToken = (user: User): TokenData => {
   const dataStoredInToken = { id: user.id };
   const secretKey = SECRET_KEY || "";
   const expiresIn = 60 * 60;

@@ -20,19 +20,23 @@ model User {
   rate        Int
   approved    Boolean
   request     ApplyRequest?
-  job         Job?
+  jobs        Job[]
 }
 
 model Job {
-  id          Int           @id @default(autoincrement())
-  title       String
-  description String
-  rate        Int
-  approved    Boolean
-  status      String
-  request     ApplyRequest?
-  user        User          @relation(fields: [userId], references: [id])
-  userId      Int           @unique
+  id            Int           @id @default(autoincrement())
+  title         String
+  description   String
+  rate          Int
+  approved      Boolean
+  status        String
+  request       ApplyRequest?
+  user          User          @relation(fields: [userId], references: [id])
+  userId        Int
+  created_at    DateTime
+  job_info      String
+  company_scale String
+  company_tips  String
 }
 
 model Application {

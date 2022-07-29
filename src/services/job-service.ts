@@ -10,14 +10,34 @@ export interface JobDto {
   approved: boolean;
   status: string;
   userId: number;
+  company_scale: string;
+  company_tips: string;
+  job_info: string;
+  created_at: Date;
 }
 
 export const findJobByRole = async (user: User | undefined): Promise<Job[]> => {
   const allJob: Job[] =
-    user?.role === "admin" || user?.role === "freelancer"
-      ? await jobs.findMany()
+    user?.role === "admin"
+      ? await jobs.findMany({
+          orderBy: {
+            created_at: "desc",
+          },
+        })
+      : user?.role === "freelancer"
+      ? await jobs.findMany({
+          where: { approved: true },
+          orderBy: {
+            created_at: "desc",
+          },
+        })
       : user?.role === "client"
-      ? await jobs.findMany({ where: { user: { is: { name: "Tey" } } } })
+      ? await jobs.findMany({
+          where: { user: { is: { name: user?.name } } },
+          orderBy: {
+            created_at: "desc",
+          },
+        })
       : [];
   return allJob;
 };
@@ -64,5 +84,30 @@ export const deleteJob = async (jobId: number): Promise<Job> => {
 
   if (!findJob) throw new HttpException(409, "Not job found");
 
-  return findJob;
+  const deletedJobData = await jobs.delete({ where: { id: jobId } });
+
+  return deletedJobData;
+};
+
+export const approveJob = async (jobId: number): Promise<Job[]> => {
+  const findJob = await jobs.findUnique({
+    where: { id: jobId },
+  });
+
+  if (!findJob) throw new HttpException(409, "Not job found");
+
+  await jobs.update({
+    where: { id: jobId },
+    data: {
+      approved: true,
+    },
+  });
+
+  const allJobData = await jobs.findMany({
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+
+  return allJobData;
 };

@@ -5,12 +5,14 @@ import { config } from "src/config";
 import rootRoutes from "src/routes/root";
 import userRoutes from "./users";
 import authRoutes from "./auth";
+import jobsRoutes from "./jobs";
 
 export default (app: Express): void => {
   app.use(rootRoutes);
 
   const api = Router();
   api.use("/users", userRoutes);
+  api.use("/jobs", jobsRoutes);
   api.use("/auth", authRoutes);
 
   app.use(config.apiPrefix, api);

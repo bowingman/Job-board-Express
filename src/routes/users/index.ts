@@ -69,7 +69,7 @@ router.post(
 
       response
         .status(200)
-        .json({ data: createUserData, message: "createuser" });
+        .json({ data: createUserData, message: "createUser" });
     } catch (error) {
       next(error);
     }
@@ -86,7 +86,7 @@ router.get(
 
       if (!findUserData) throw new HttpException(409, "You're not user");
 
-      response.status(200).json({ data: findUserData, message: "finduser" });
+      response.status(200).json({ data: findUserData, message: "findUser" });
     } catch (error) {
       next(error);
     }
@@ -127,7 +127,7 @@ router.put(
 
       response
         .status(200)
-        .json({ data: updateUserData, message: "updateuser" });
+        .json({ data: updateUserData, message: "updateUser" });
     } catch (error) {
       next(error);
     }
@@ -146,7 +146,7 @@ router.delete(
 
       response
         .status(200)
-        .json({ data: deleteUserData, message: "deleteuser" });
+        .json({ data: deleteUserData, message: "deleteUser" });
     } catch (error) {
       next(error);
     }
