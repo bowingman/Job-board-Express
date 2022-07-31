@@ -9,7 +9,11 @@ export const findUserByRole = async (
 ): Promise<User[]> => {
   const allUser: User[] =
     role === "admin"
-      ? await users.findMany()
+      ? await users.findMany({
+          orderBy: {
+            id: "asc",
+          },
+        })
       : role === "client"
       ? await users.findMany({
           where: { role: "freelancer" },
@@ -88,6 +92,29 @@ export const deleteUser = async (userId: number): Promise<User> => {
   const deleteUserData = await users.delete({ where: { id: userId } });
 
   return deleteUserData;
+};
+
+export const approveUser = async (userId: number): Promise<User[]> => {
+  const findUser = await users.findUnique({ where: { id: userId } });
+
+  if (!findUser) throw new HttpException(409, "You're not user");
+
+  await users.update({
+    where: { id: userId },
+    data: {
+      approved: true,
+    },
+  });
+
+  const usersData = await users.findMany({
+    orderBy: {
+      id: "asc",
+    },
+  });
+
+  if (!usersData) throw new HttpException(409, "Erros in get all users");
+
+  return usersData;
 };
 
 // export const createOne = ({ username }: Omit<User, "id">): User => {

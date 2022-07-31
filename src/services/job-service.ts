@@ -20,6 +20,9 @@ export const findJobByRole = async (user: User | undefined): Promise<Job[]> => {
   const allJob: Job[] =
     user?.role === "admin"
       ? await jobs.findMany({
+          include: {
+            Application: true,
+          },
           orderBy: {
             created_at: "desc",
           },
@@ -27,6 +30,17 @@ export const findJobByRole = async (user: User | undefined): Promise<Job[]> => {
       : user?.role === "freelancer"
       ? await jobs.findMany({
           where: { approved: true },
+          include: {
+            Application: {
+              where: {
+                user: {
+                  is: {
+                    id: user?.id,
+                  },
+                },
+              },
+            },
+          },
           orderBy: {
             created_at: "desc",
           },
@@ -34,6 +48,9 @@ export const findJobByRole = async (user: User | undefined): Promise<Job[]> => {
       : user?.role === "client"
       ? await jobs.findMany({
           where: { user: { is: { name: user?.name } } },
+          include: {
+            Application: true,
+          },
           orderBy: {
             created_at: "desc",
           },
@@ -70,6 +87,11 @@ export const updateJob = async (
 export const findJob = async (jobId: number): Promise<Job> => {
   const findJob = await jobs.findUnique({
     where: { id: jobId },
+    include: {
+      Application: {
+        include: { user: true },
+      },
+    },
   });
 
   if (!findJob) throw new HttpException(409, "Not job found");
@@ -104,6 +126,9 @@ export const approveJob = async (jobId: number): Promise<Job[]> => {
   });
 
   const allJobData = await jobs.findMany({
+    include: {
+      Application: true,
+    },
     orderBy: {
       created_at: "desc",
     },

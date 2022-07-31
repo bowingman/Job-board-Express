@@ -8,6 +8,7 @@ import {
   findUser,
   updateUser,
   deleteUser,
+  approveUser,
 } from "src/services/dupuser-service";
 import {
   RequestWithUser,
@@ -138,15 +139,34 @@ router.delete(
   "/:id",
   bodyParser.json(),
   authMiddleware,
-  (request: Request, response: Response, next: NextFunction) => {
+  async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const deleteUserData = deleteUser(Number(request.params.id));
+      const deleteUserData = await deleteUser(Number(request.params.id));
 
       if (!deleteUser) throw new HttpException(409, "You are not user");
 
       response
         .status(200)
         .json({ data: deleteUserData, message: "deleteUser" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/:id/approve",
+  bodyParser.json(),
+  authMiddleware,
+  async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const approvedUserData = await approveUser(Number(request.params.id));
+
+      if (!approvedUserData) throw new HttpException(409, "You are not user");
+
+      response
+        .status(200)
+        .json({ data: approvedUserData, message: "approveUser" });
     } catch (error) {
       next(error);
     }

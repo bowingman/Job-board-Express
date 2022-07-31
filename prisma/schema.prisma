@@ -21,6 +21,7 @@ model User {
   approved    Boolean
   request     ApplyRequest?
   jobs        Job[]
+  Application Application[]
 }
 
 model Job {
@@ -37,12 +38,19 @@ model Job {
   job_info      String
   company_scale String
   company_tips  String
+  Application   Application[]
 }
 
 model Application {
-  id      Int    @id @default(autoincrement())
-  content String
-  rate    Int
+  id       Int     @id @default(autoincrement())
+  content  String
+  rate     Int
+  user     User    @relation(fields: [userId], references: [id])
+  userId   Int
+  job      Job     @relation(fields: [jobId], references: [id])
+  jobId    Int
+  answered Boolean
+  answer   String?
 }
 
 model ApplyRequest {
