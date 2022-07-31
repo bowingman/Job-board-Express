@@ -1,4 +1,18 @@
-# An Express + Typescript + Mocha + Nyc + Eslint + Nodemon + Prettier Template Generator
+# Job Board Backend with (An Express + Typescript + Mocha + Nyc + Eslint + Nodemon + Prisma)
+
+## Functional Ability
+
+- Users should sign in/sign up to the job board with creating their profile
+- Users can edit their profile
+- There are three roles(clients, freelancers, admin)
+- Clients can create new jobs
+- Clients can see all freelancers and their own posted jobs
+- Clients can see freelancers' applications for their jobs
+- Freelancers can see all active jobs
+- Freelancers can apply to the jobs with application and amount
+- Freelancers can edit their application(bid)
+- Admins can see all jobs/freelancers/clients
+- Admins can block/approve jobs/freelancers/clients
 
 This is a template for expressjs + typescript projects. It bootstraps a template project with [some popular packages](#Configuration-Files) and some pre-configured [npm script commands](#NPM-Scripts).
 
@@ -73,24 +87,24 @@ If you have your own folder structure, just delete `tests` folder and everything
 ```yaml
 dist -- target folder for `npm build` (git ignored)
 src -- source folder, all source code
-  src/middleware - you can put your common middleware here
-  src/middleware/cache-forever.ts - an example middleware which sets the Cache-Control header
-  src/routes - all urls available from the service
-  src/route/root - urls at root level
-  src/route/root/index.ts - a handlers for /favicon.ico /robots.txt /health-check endpoints
-  src/routes/users/index.ts - an example route handler
-  src/services/user-service.ts - an example service/helper/model
-  src/utils - utility helpers
-  src/utils/loggers.ts - winston logger
-  src/validation-schemas - joi schemas
-  src/validation-schemas/config-schema.ts - joi schemas for config file
-  src/app.ts - creates an express object
-  src/config.ts - configuration file, validated with joi schema, app will fail to start if config is invalid
-  src/server.ts - start the http server
+src/middleware - you can put your common middleware here
+src/middleware/cache-forever.ts - an example middleware which sets the Cache-Control header
+src/routes - all urls available from the service
+src/route/root - urls at root level
+src/route/root/index.ts - a handlers for /favicon.ico /robots.txt /health-check endpoints
+src/routes/users/index.ts - an example route handler
+src/services/user-service.ts - an example service/helper/model
+src/utils - utility helpers
+src/utils/loggers.ts - winston logger
+src/validation-schemas - joi schemas
+src/validation-schemas/config-schema.ts - joi schemas for config file
+src/app.ts - creates an express object
+src/config.ts - configuration file, validated with joi schema, app will fail to start if config is invalid
+src/server.ts - start the http server
 tests - test related files
-  tests/src - all tests
-  tests/utils.ts - helper function for tests
-  tests/setup.ts - test setup file
+tests/src - all tests
+tests/utils.ts - helper function for tests
+tests/setup.ts - test setup file
 tmp - tmp folder for coverage output etc. (git ignored)
 .env - environment variables for DEVELOPMENT environment
 ```
