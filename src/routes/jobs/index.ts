@@ -15,13 +15,14 @@ import {
   updateJob,
   approveJob,
 } from "src/services/job-service";
+import { isAdmin, isClient } from "src/middleware/authorization.middleware";
 
 const router = Router();
+router.use([authMiddleware]);
 
 router.get(
   "/",
   bodyParser.json(),
-  authMiddleware,
   async (request: RequestWithUser, response: Response, next: NextFunction) => {
     try {
       const findAllJobsData = await findJobByRole(request.user);
@@ -36,7 +37,7 @@ router.get(
 router.post(
   "/",
   bodyParser.json(),
-  authMiddleware,
+  isClient,
   async (
     request: RequestWithUserGeneric<
       core.ParamsDictionary,
@@ -76,7 +77,6 @@ router.post(
 router.get(
   "/:id",
   bodyParser.json(),
-  authMiddleware,
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const findJobData = await findJob(Number(request.params.id));
@@ -90,7 +90,7 @@ router.get(
 router.delete(
   "/:id",
   bodyParser.json(),
-  authMiddleware,
+  isClient,
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const deleteJobData = await deleteJob(Number(request.params.id));
@@ -104,7 +104,7 @@ router.delete(
 router.put(
   "/:id",
   bodyParser.json(),
-  authMiddleware,
+  isClient,
   async (
     request: RequestWithUserGeneric<
       core.ParamsDictionary,
@@ -130,7 +130,7 @@ router.put(
 router.put(
   "/:id/approve",
   bodyParser.json(),
-  authMiddleware,
+  isAdmin,
   async (request: RequestWithUser, response: Response, next: NextFunction) => {
     try {
       const approvedJobData = await approveJob(Number(request.params.id));

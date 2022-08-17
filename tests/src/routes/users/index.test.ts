@@ -83,6 +83,44 @@ describe("Testing Users", () => {
       });
     });
   });
+  describe("[DELETE] /user/1", () => {
+    it("response Delete user", async () => {
+      const userData = await users.findUnique({
+        where: { id: 1 },
+      });
+
+      const response = await request(app())
+        .delete("v1/users/1")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .expect(200);
+    });
+    describe("[UPDATE] /user/1", () => {
+      it("response Get user", async () => {
+        const userData = {
+          name: "Stephen",
+          password: "123456",
+          title: "Frontend Developer",
+          role: "freelancer",
+          description: "seeking a frontend devlopment",
+        };
+
+        const response = await request(app())
+          .put("v1/users/1")
+          .set("Authorization", `Bearer ${adminToken}`)
+          .send(userData)
+          .expect(200);
+
+        const realData = await users.findUnique({
+          where: { id: 1 },
+        });
+
+        expect(response.body).to.deep.equal({
+          data: realData,
+          message: "findUser",
+        });
+      });
+    });
+  });
 });
 
 // import { expect } from "chai";

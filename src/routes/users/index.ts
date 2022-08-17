@@ -16,13 +16,15 @@ import {
 } from "src/interfaces/auth.interface";
 
 import { HttpException } from "src/exceptions/HttpException";
+import { isAdmin } from "src/middleware/authorization.middleware";
 
 const router = Router();
+
+router.use([authMiddleware, isAdmin]);
 
 router.get(
   "/",
   bodyParser.json(),
-  authMiddleware,
   async (_: RequestWithUser, response: Response, next: NextFunction) => {
     try {
       const findAllUsersData = await findUserByRole(_.user?.role);
@@ -39,7 +41,6 @@ router.get(
 router.post(
   "/",
   bodyParser.json(),
-  authMiddleware,
   async (
     request: RequestWithUserGeneric<
       core.ParamsDictionary,
@@ -80,7 +81,6 @@ router.post(
 router.get(
   "/:id",
   bodyParser.json(),
-  authMiddleware,
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const findUserData = await findUser(Number(request.params.id));
@@ -97,7 +97,6 @@ router.get(
 router.put(
   "/:id",
   bodyParser.json(),
-  authMiddleware,
   async (
     request: RequestWithUserGeneric<
       core.ParamsDictionary,
@@ -138,7 +137,6 @@ router.put(
 router.delete(
   "/:id",
   bodyParser.json(),
-  authMiddleware,
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const deleteUserData = await deleteUser(Number(request.params.id));
@@ -157,7 +155,6 @@ router.delete(
 router.put(
   "/:id/approve",
   bodyParser.json(),
-  authMiddleware,
   async (request: Request, response: Response, next: NextFunction) => {
     try {
       const approvedUserData = await approveUser(Number(request.params.id));
